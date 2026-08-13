@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEXUS GEAR | 紅黑戰境電競裝備庫</title>
+  <style>
+    /* --- CSS 變數與紅黑配色設定 --- */
+    :root {
+      --bg-color: #080305;
+      --card-bg: #12070a;
+      --card-bg-hover: #1f0b11;
+      --accent-red: #ff1e42;
+      --accent-crimson: #99001c;
+      --accent-cyan: #00f3ff;
+      --text-main: #f0e6e8;
+      --text-muted: #a08890;
+      --border-color: #2e0f17;
+      --glow-red: rgba(255, 30, 66, 0.4);
+      --glow-crimson: rgba(153, 0, 28, 0.6);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    /* --- RGB 漸層動態背景 --- */
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.6;
+      background-image: 
+        radial-gradient(circle at 20% 20%, rgba(255, 30, 66, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(153, 0, 28, 0.2) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(0, 243, 255, 0.05) 0%, transparent 60%);
+      background-size: 200% 200%;
+      animation: rgbGradientMove 12s ease infinite;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    @keyframes rgbGradientMove {
+      0% { background-position: 0% 0%; }
+      50% { background-position: 100% 100%; }
+      100% { background-position: 0% 0%; }
+    }
+
+    /* --- 導覽列 --- */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(8, 3, 5, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem 2rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+    }
+
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      background: linear-gradient(135deg, #ff1e42, #ff6b81, #ff1e42);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+      text-shadow: 0 0 15px var(--glow-red);
+    }
+
+    .tagline {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      letter-spacing: 1.5px;
+    }
+
+    .cart-btn {
+      position: relative;
+      background: rgba(255, 30, 66, 0.1);
+      border: 1px solid var(--accent-red);
+      color: var(--accent-red);
+      padding: 0.6rem 1.2rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cart-btn:hover {
+      background: var(--accent-red);
+      color: #fff;
+      box-shadow: 0 0 20px var(--glow-red);
+    }
+
+    .cart-count {
+      background: #fff;
+      color: var(--accent-crimson);
+      font-size: 0.75rem;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 10px;
+    }
+
+    /* --- 視圖切換 --- */
+    .view-section {
+      display: none;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    /* --- 英雄區塊與 Tab --- */
+    .hero {
+      text-align: center;
+      padding: 2.5rem 1.5rem 1.5rem;
+      max-width: 850px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      font-size: 2.3rem;
+      margin-bottom: 0.8rem;
+      color: #fff;
+      text-shadow: 0 0 15px var(--glow-red);
+      letter-spacing: 1px;
+    }
+
+    .hero p {
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    .category-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 1.8rem 0 2rem;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.6rem 1.5rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .tab-btn:hover, .tab-btn.active {
+      background: linear-gradient(135deg, var(--accent-crimson), var(--accent-red));
+      border-color: var(--accent-red);
+      color: #fff;
+      box-shadow: 0 0 15px var(--glow-red);
+    }
+
+    /* --- 商品網格 --- */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem 3rem;
+      flex: 1;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.8rem;
+    }
+
+    .product-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent-red);
+      box-shadow: 0 5px 25px rgba(255, 30, 66, 0.25);
+    }
+
+    .image-wrapper {
+      width: 100%;
+      height: 180px;
+      background: #000;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .product-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.85;
+      transition: opacity 0.3s ease, transform 0.5s ease;
+    }
+
+    .product-card:hover .product-img {
+      opacity: 1;
+      transform: scale(1.06);
+    }
+
+    .product-info {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .product-category-tag {
+      font-size: 0.7rem;
+      color: var(--accent-red);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.3rem;
+      font-weight: bold;
+    }
+
+    .product-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+
+    .product-price {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--accent-red);
+      margin-bottom: 1rem;
+    }
+
+    .card-buttons {
+      margin-top: auto;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn-secondary {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.6rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    .btn-primary {
+      flex: 1.5;
+      background: linear-gradient(90deg, #2b0008, var(--accent-crimson));
+      border: 1px solid var(--accent-red);
+      color: var(--text-main);
+      padding: 0.6rem;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(90deg, var(--accent-crimson), var(--accent-red));
+      color: #fff;
+      box-shadow: 0 0 15px var(--glow-red);
+    }
+
+    /* --- Modal 彈出視窗 --- */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-body {
+      background: var(--card-bg);
+      border: 1px solid var(--accent-red);
+      border-radius: 8px;
+      width: 90%;
+      max-width: 650px;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 0 35px var(--glow-red);
+      padding: 1.8rem;
+      position: relative;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1.2rem;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.8rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .close-btn:hover { color: var(--accent-red); }
+
+    /* --- 商品詳情 Modal --- */
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .detail-img {
+      width: 100%;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1px solid var(--border-color);
+    }
+
+    .detail-info h2 {
+      color: #fff;
+      font-size: 1.4rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .detail-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .detail-specs {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 0.8rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      border-left: 3px solid var(--accent-red);
+    }
+
+    .option-group {
+      margin-bottom: 1rem;
+    }
+
+    .option-title {
+      font-size: 0.85rem;
+      color: #fff;
+      margin-bottom: 0.4rem;
+      display: block;
+    }
+
+    .option-select {
+      width: 100%;
+      background: #080305;
+      border: 1px solid var(--border-color);
+      color: #fff;
+      padding: 0.5rem;
+      border-radius: 4px;
+      outline: none;
+    }
+
+    .option-select:focus {
+      border-color: var(--accent-red);
+    }
+
+    /* --- 購物車 Modal --- */
+    .cart-header {
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .cart-items {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.8rem;
+      border-radius: 4px;
+      border-left: 3px solid var(--accent-red);
+    }
+
+    .cart-item-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .cart-footer {
+      border-top: 1px solid var(--border-color);
+      padding-top: 1rem;
+      margin-top: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* --- 結帳頁面 --- */
+    .checkout-container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .checkout-title {
+      font-size: 1.8rem;
+      color: #fff;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.5rem;
+    }
+
+    .checkout-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .form-control {
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 0.7rem;
+      border-radius: 4px;
+      color: #fff;
+      outline: none;
+    }
+
+    .form-control:focus {
+      border-color: var(--accent-red);
+    }
+
+    .order-summary {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 1.5rem;
+      border-radius: 6px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.8rem;
+      font-size: 0.9rem;
+    }
+
+    .summary-total {
+      border-top: 1px solid var(--border-color);
+      padding-top: 0.8rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--accent-red);
+    }
+
+    /* --- 頁尾 --- */
+    footer {
+      border-top: 1px solid var(--border-color);
+      text-align: center;
+      padding: 1.5rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 3rem;
+    }
+
+    /* --- 響應式調整 --- */
+    @media (max-width: 768px) {
+      .detail-grid, .checkout-grid {
+        grid-template-columns: 1fr;
+      }
+      header {
+        padding: 0.8rem 1rem;
+      }
+      .logo {
+        font-size: 1.4rem;
+      }
+      .hero h1 {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 導覽列 -->
+  <header>
+    <div class="header-container">
+      <div class="brand" onclick="switchView('shop')">
+        <span class="logo">NEXUS GEAR</span>
+        <span class="tagline">RED & BLACK GAMING ARENA</span>
+      </div>
+      <button class="cart-btn" onclick="toggleCartModal()">
+        🛒 購物車 <span class="cart-count" id="cart-count">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- 視圖 1：商店主頁 -->
+  <div id="shop-view" class="view-section active">
+    <!-- 英雄區塊 -->
+    <section class="hero">
+      <h1>赤紅獵殺・掌握絕對戰局</h1>
+      <p>NEXUS GEAR 專為追求頂尖效能的玩家打造。極致反應速度、熱血紅黑美學，專屬你的次世代電競裝備庫。</p>
+      
+      <!-- 三大商品分類分頁 -->
+      <div class="category-tabs">
+        <button class="tab-btn active" onclick="filterCategory('all', this)">全裝備庫 (30)</button>
+        <button class="tab-btn" onclick="filterCategory('peripherals', this)">核心外設 (10)</button>
+        <button class="tab-btn" onclick="filterCategory('audio', this)">音訊影音 (10)</button>
+        <button class="tab-btn" onclick="filterCategory('gear', this)">裝備配件 (10)</button>
+      </div>
+    </section>
+
+    <!-- 商品網格區塊 -->
+    <main class="container">
+      <div class="product-grid" id="product-grid">
+        <!-- 商品卡片由 JS 動態生成 -->
+      </div>
+    </main>
+  </div>
+
+  <!-- 視圖 2：結帳頁面 -->
+  <div id="checkout-view" class="view-section">
+    <div class="checkout-container">
+      <h2 class="checkout-title">結帳確認 (Checkout)</h2>
+      <div class="checkout-grid">
+        <!-- 訂購人與配送資訊表單 -->
+        <div>
+          <h3 style="color:#fff; margin-bottom:1rem;">1. 訂購人資訊與寄送地址</h3>
+          <form id="checkout-form" onsubmit="handleCheckoutSubmit(event)">
+            <div class="form-group">
+              <label>姓名</label>
+              <input type="text" class="form-control" required placeholder="請輸入收件人姓名" />
+            </div>
+            <div class="form-group">
+              <label>電子郵件</label>
+              <input type="email" class="form-control" required placeholder="example@nexus.com" />
+            </div>
+            <div class="form-group">
+              <label>行動電話</label>
+              <input type="tel" class="form-control" required placeholder="0912-345-678" />
+            </div>
+            <div class="form-group">
+              <label>收件地址</label>
+              <input type="text" class="form-control" required placeholder="請輸入完整運送地址" />
+            </div>
+            <h3 style="color:#fff; margin:1.5rem 0 1rem;">2. 付款方式 (模擬)</h3>
+            <div class="form-group">
+              <select class="form-control">
+                <option>信用卡 / 金融卡 (VISA / MasterCard)</option>
+                <option>超商貨到付款</option>
+                <option>LINE Pay / 街口支付</option>
+              </select>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%; padding:0.8rem; margin-top:1rem; font-size:1rem;">
+              確認下單 (完成測試)
+            </button>
+          </form>
+        </div>
+
+        <!-- 訂單明細 -->
+        <div>
+          <div class="order-summary">
+            <h3 style="color:#fff; margin-bottom:1rem;">訂單摘要</h3>
+            <div id="checkout-items-list">
+              <!-- 結帳清單動態生成 -->
+            </div>
+            <div class="summary-row" style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 0.8rem;">
+              <span>小計</span>
+              <span id="checkout-subtotal">NT$ 0</span>
+            </div>
+            <div class="summary-row">
+              <span>運費</span>
+              <span style="color:var(--accent-red);">免運費</span>
+            </div>
+            <div class="summary-row summary-total">
+              <span>總計</span>
+              <span id="checkout-final-total">NT$ 0</span>
+            </div>
+            <button class="btn-secondary" onclick="switchView('shop')" style="width:100%; margin-top:1rem;">
+              ← 返回繼續購物
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 商品詳情 Modal -->
+  <div class="modal" id="detail-modal">
+    <div class="modal-body">
+      <button class="close-btn" onclick="closeModal('detail-modal')">&times;</button>
+      <div id="detail-content">
+        <!-- 動態渲染商品詳情 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 購物車 Modal -->
+  <div class="modal" id="cart-modal">
+    <div class="modal-body" style="max-width:480px;">
+      <button class="close-btn" onclick="closeModal('cart-modal')">&times;</button>
+      <div class="cart-header">
+        <h2 style="color:var(--accent-red); font-size:1.3rem;">已選購裝備</h2>
+      </div>
+      <div class="cart-items" id="cart-items">
+        <!-- 購物車列表動態渲染 -->
+      </div>
+      <div class="cart-footer">
+        <div>
+          <span>總計：</span>
+          <strong id="cart-total" style="color: var(--accent-red); font-size: 1.2rem;">NT$ 0</strong>
+        </div>
+        <button class="btn-primary" onclick="goToCheckout()">前往結帳</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 頁尾 -->
+  <footer>
+    &copy; 2026 NEXUS GEAR. All rights reserved. 專為電競玩家設計。
+  </footer>
+
+  <script>
+    // --- 30 項完整商品資料庫 (三大項各 10 項，顏色選擇 2~5 種) ---
+    const products = [
+      // === 1. 核心外設 (peripherals) - 10 項 ===
+      {
+        id: 1,
+        category: "peripherals",
+        name: "NEXUS Apex Red 無線電競滑鼠",
+        price: 2890,
+        image: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=600&q=80",
+        desc: "26,000 DPI 光學傳感器，極致超輕量 52g 設計，具備 0.2ms 超快響應速度。",
+        size: "125 x 63 x 40 mm",
+        colors: ["暗夜紅", "漆黑", "霓光紅", "賽博紫"]
+      },
+      {
+        id: 2,
+        category: "peripherals",
+        name: "NEXUS CyberBlade 磁軸機械鍵盤",
+        price: 3680,
+        image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=600&q=80",
+        desc: "Rapid Trigger 快速觸發機制，可自訂 0.1-4.0mm 觸發行程，血紅 RGB 燈效。",
+        size: "75% 緊湊配置 (320 x 130 mm)",
+        colors: ["血焰紅", "漆黑", "鈦灰"]
+      },
+      {
+        id: 3,
+        category: "peripherals",
+        name: "NEXUS Precision 光學微動滑鼠",
+        price: 1880,
+        image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?auto=format&fit=crop&w=600&q=80",
+        desc: "FPS 玩家專用，連點耐用度破億次光學微動，附帶防滑磨砂抓握貼。",
+        size: "120 x 65 x 38 mm",
+        colors: ["赤紅", "深邃黑", "冷金屬銀"]
+      },
+      {
+        id: 4,
+        category: "peripherals",
+        name: "NEXUS MechStrike 全尺寸鍵盤",
+        price: 2980,
+        image: "https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&w=600&q=80",
+        desc: "航空級鋁合金面板，全鍵無衝熱插拔軸體，隨附磁吸式皮質手托。",
+        size: "全尺寸 104 鍵 (440 x 140 mm)",
+        colors: ["黑紅限定版", "漆黑", "槍鋼灰"]
+      },
+      {
+        id: 5,
+        category: "peripherals",
+        name: "NEXUS SpeedStar 超輕量有線滑鼠",
+        price: 1280,
+        image: "https://images.unsplash.com/photo-1625225233840-695456021cde?auto=format&fit=crop&w=600&q=80",
+        desc: "洞洞鼠輕量化 48g，軟繩傘繩線無感束縛，高敏捷度甩槍首選。",
+        size: "118 x 60 x 36 mm",
+        colors: ["烈焰紅", "曜石黑", "雪白", "鮮黃", "霓光綠"]
+      },
+      {
+        id: 6,
+        category: "peripherals",
+        name: "NEXUS CommandPad 單手電競鍵盤",
+        price: 1680,
+        image: "https://images.unsplash.com/photo-1541140590052-166d63327e45?auto=format&fit=crop&w=600&q=80",
+        desc: "專為 MOBA/FPS 設計，28 鍵可程式化巨集，符合人體工學掌托。",
+        size: "210 x 170 x 45 mm",
+        colors: ["暗夜紅", "漆黑"]
+      },
+      {
+        id: 7,
+        category: "peripherals",
+        name: "NEXUS ShadowX 靜音氣墊機械鍵盤",
+        price: 3250,
+        image: "https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?auto=format&fit=crop&w=600&q=80",
+        desc: "Gasket 軟彈結構搭配消音棉，享受極致敲擊沉浸感與深夜不打擾靜音體驗。",
+        size: "98 鍵緊湊排列 (380 x 135 mm)",
+        colors: ["熔岩紅", "暗黑", "冰川白"]
+      },
+      {
+        id: 8,
+        category: "peripherals",
+        name: "NEXUS Venom 雙模三向搖桿滑鼠",
+        price: 2480,
+        image: "https://images.unsplash.com/photo-1605773527852-c546a8584ea3?auto=format&fit=crop&w=600&q=80",
+        desc: "側邊配置可自訂類比搖桿，模擬飛行與賽車控制，靈敏度隨時切換。",
+        size: "128 x 70 x 42 mm",
+        colors: ["毒液紅", "曜夜黑", "鈦銀"]
+      },
+      {
+        id: 79,
+        category: "peripherals",
+        name: "NEXUS KeyForce 矮軸薄型機械鍵盤",
+        price: 2790,
+        image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=600&q=80",
+        desc: "極薄 18mm 機身，短鍵程超快反應，兼顧辦公與遊戲雙重需求。",
+        size: "84 鍵 (315 x 120 x 18 mm)",
+        colors: ["深紅", "星空黑", "太空灰", "香檳金"]
+      },
+      {
+        id: 10,
+        category: "peripherals",
+        name: "NEXUS GlidePad 玻璃電競滑鼠墊",
+        price: 1480,
+        image: "https://images.unsplash.com/photo-1629429408209-1f912961dbd8?auto=format&fit=crop&w=600&q=80",
+        desc: "強化鋼化玻璃表面，零阻力滑行體驗，抗刮耐磨且極易清潔。",
+        size: "L (450 x 400 x 4 mm)",
+        colors: ["血印紅", "深淵黑"]
+      },
+
+      // === 2. 音訊與影音 (audio) - 10 項 ===
+      {
+        id: 11,
+        category: "audio",
+        name: "NEXUS Phantom 7.1 雙模電競耳機",
+        price: 2450,
+        image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=600&q=80",
+        desc: "50mm 石墨烯驅動單元，聽音辨位極致準確，支援 2.4GHz 與藍牙 5.3。",
+        size: "可調節頭圍 (耳罩 90mm)",
+        colors: ["暗夜紅", "漆黑", "炫光紫"]
+      },
+      {
+        id: 12,
+        category: "audio",
+        name: "NEXUS Quantum Stream 電容麥克風",
+        price: 3120,
+        image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&w=600&q=80",
+        desc: "工作室級 192kHz/24bit 採樣率，主動降噪與一鍵靜音，實況主推薦款。",
+        size: "高 220 mm (含金屬支架)",
+        colors: ["赤焰紅", "深邃黑", "皓雪白"]
+      },
+      {
+        id: 13,
+        category: "audio",
+        name: "NEXUS SoundPulse 聲霸電競喇叭",
+        price: 1980,
+        image: "https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=600&q=80",
+        desc: "雙被動動態震膜，血紅 RGB 律動燈效，完美融入螢幕下方空間。",
+        size: "410 x 70 x 68 mm",
+        colors: ["暗夜紅", "曜石黑"]
+      },
+      {
+        id: 14,
+        category: "audio",
+        name: "NEXUS Vision4K 144Hz 實況擷取卡",
+        price: 4200,
+        image: "https://images.unsplash.com/photo-1585060544812-6b45742d762f?auto=format&fit=crop&w=600&q=80",
+        desc: "4K 60fps Passthrough 與 1080p 240fps 順暢錄影，超低延遲畫面傳輸。",
+        size: "100 x 60 x 15 mm",
+        colors: ["血焰紅", "漆黑"]
+      },
+      {
+        id: 15,
+        category: "audio",
+        name: "NEXUS Buds Pro 無線真無線電競耳機",
+        price: 1890,
+        image: "https://images.unsplash.com/photo-1590658006821-04f4008d5717?auto=format&fit=crop&w=600&q=80",
+        desc: "35ms 超低延遲遊戲模式，主動 ANC 降噪，專屬充電盒具備戰鬥燈效。",
+        size: "耳機入耳式 / 充電盒 60x45mm",
+        colors: ["霓光紅", "曜夜黑", "珍珠白", "賽博黃"]
+      },
+      {
+        id: 16,
+        category: "audio",
+        name: "NEXUS AudioBox USB 獨立聲卡卡",
+        price: 1580,
+        image: "https://images.unsplash.com/photo-1598550476439-6847785fcea6?auto=format&fit=crop&w=600&q=80",
+        desc: "硬體級虛擬 7.1 聲道轉換，腳步聲加強EQ切換鈕，免驅動即插即用。",
+        size: "80 x 45 x 18 mm",
+        colors: ["暗夜紅", "漆黑"]
+      },
+      {
+        id: 17,
+        category: "audio",
+        name: "NEXUS Headset Stand 懸掛耳機架",
+        price: 990,
+        image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=600&q=80",
+        desc: "重量級金屬底座，整合 3 埠 USB 3.0 集線器與 RGB 底座氣氛燈。",
+        size: "高 280 mm",
+        colors: ["赤紅底座", "全黑底座", "銀紅混色"]
+      },
+      {
+        id: 18,
+        category: "audio",
+        name: "NEXUS StudioMic 懸臂麥克風支架",
+        price: 1120,
+        image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&w=600&q=80",
+        desc: "隱藏式彈簧與走線槽設計，全金屬阻尼關節，完美支撐高階麥克風。",
+        size: "臂長 400 + 400 mm",
+        colors: ["暗紅金屬", "霧面黑"]
+      },
+      {
+        id: 19,
+        category: "audio",
+        name: "NEXUS NoiseShield 降噪入耳式耳機",
+        price: 1350,
+        image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=600&q=80",
+        desc: "雙動圈單元，戴耳罩嫌熱的最佳替代方案，附帶可拆卸式長麥克風。",
+        size: "線長 1.2m (含可拆式麥克風)",
+        colors: ["烈焰紅", "漆黑", "青銅灰", "薄荷綠", "電光紫"]
+      },
+      {
+        id: 20,
+        category: "audio",
+        name: "NEXUS 4K StreamCam 實況視訊鏡頭",
+        price: 3450,
+        image: "https://images.unsplash.com/photo-1585060544812-6b45742d762f?auto=format&fit=crop&w=600&q=80",
+        desc: "索尼感光元件 4K 30fps / 1080p 60fps，自帶環形補光燈與磁吸隱私蓋。",
+        size: "92 x 50 x 40 mm",
+        colors: ["深紅飾環", "純黑鏡面"]
+      },
+
+      // === 3. 裝備與配件 (gear) - 10 項 ===
+      {
+        id: 21,
+        category: "gear",
+        name: "NEXUS WarpSpeed RGB 超大發光墊",
+        price: 890,
+        image: "https://images.unsplash.com/photo-1629429408209-1f912961dbd8?auto=format&fit=crop&w=600&q=80",
+        desc: "微織布面優化追蹤速度，防潑水表面，血紅包邊燈條支援多種發光模式。",
+        size: "XL (900 x 400 x 4 mm)",
+        colors: ["黑紅戰術", "暗黑印花", "純血紅"]
+      },
+      {
+        id: 22,
+        category: "gear",
+        name: "NEXUS Sentinel 人體工學電競椅",
+        price: 7980,
+        image: "https://images.unsplash.com/photo-1598550476439-6847785fcea6?auto=format&fit=crop&w=600&q=80",
+        desc: "高密度冷泡海綿，4D 旋轉扶手與 165 度可調後仰，烈焰紅刺繡圖騰。",
+        size: "高 125-135 cm (載重 150kg)",
+        colors: ["黑紅熱血", "全黑極致", "灰黑鋼鐵"]
+      },
+      {
+        id: 23,
+        category: "gear",
+        name: "NEXUS HeavyDuty 氣壓螢幕支架",
+        price: 2280,
+        image: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=600&q=80",
+        desc: "氣壓自由彈性升降，支援 360 度旋轉與隱藏式理線，釋放桌面空間。",
+        size: "支援 17-32 吋螢幕",
+        colors: ["赤紅黑", "戰術黑", "鈦銀"]
+      },
+      {
+        id: 24,
+        category: "gear",
+        name: "NEXUS Core 戰術風格電競後背包",
+        price: 1650,
+        image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=600&q=80",
+        desc: "防潑水硬殼防護結構，專用 17.3 吋筆電防震層，附外置 USB 充電連接埠。",
+        size: "20 Liter (48 x 32 x 18 cm)",
+        colors: ["紅黑戰術", "暗夜黑"]
+      },
+      {
+        id: 25,
+        category: "gear",
+        name: "NEXUS FrostCool 筆電散熱支架",
+        price: 1180,
+        image: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=600&q=80",
+        desc: "雙 140mm 大風扇高效降溫，七段高度角度調節，防滑擋板設計。",
+        size: "支援 13-18 吋筆電",
+        colors: ["紅光黑", "全黑風暴", "炫彩RGB"]
+      },
+      {
+        id: 26,
+        category: "gear",
+        name: "NEXUS Bungee 滑鼠線夾理線器",
+        price: 550,
+        image: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=600&q=80",
+        desc: "彈性金屬彈簧彈簧臂，穩固重量級底座，消除有線滑鼠拖曳拉扯感。",
+        size: "120 x 80 x 110 mm",
+        colors: ["暗夜紅", "漆黑", "軍綠", "暗紫"]
+      },
+      {
+        id: 27,
+        category: "gear",
+        name: "NEXUS Armor 鍵盤防塵壓克力罩",
+        price: 490,
+        image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=600&q=80",
+        desc: "高透光加厚壓克力，精準切邊防塵防水，維持桌面整潔的利器。",
+        size: "支援 75% / 80% / 100% 鍵盤",
+        colors: ["透紅限定", "全透明", "燻黑半透"]
+      },
+      {
+        id: 28,
+        category: "gear",
+        name: "NEXUS DeskMat 麂皮皮革防刮桌墊",
+        price: 750,
+        image: "https://images.unsplash.com/photo-1629429408209-1f912961dbd8?auto=format&fit=crop&w=600&q=80",
+        desc: "優質 PU 革加厚麂皮底，質感極佳，防水耐髒 wipes 即可清潔。",
+        size: "800 x 400 x 2 mm",
+        colors: ["酒紅", "黑金", "墨綠", "海軍藍", "駝色"]
+      },
+      {
+        id: 29,
+        category: "gear",
+        name: "NEXUS CableMaster 磁吸理線套組",
+        price: 390,
+        image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80",
+        desc: "強力磁吸線夾與矽膠固定座，拯救雜亂的桌面線材，收納更容易。",
+        size: "一組含 6 磁吸扣 + 1 底座",
+        colors: ["暗夜紅", "極致黑"]
+      },
+      {
+        id: 30,
+        category: "gear",
+        name: "NEXUS PowerBank 20000mAh 快充寶",
+        price: 1290,
+        image: "https://images.unsplash.com/photo-1609592424087-3d1421e42848?auto=format&fit=crop&w=600&q=80",
+        desc: "支援 PD 65W 大功率快充，可為掌機與筆電供電，機身數字百分比顯示。",
+        size: "150 x 68 x 28 mm",
+        colors: ["戰鬥紅", "裝甲黑", "鈦灰"]
+      }
+    ];
+
+    let cart = [];
+    let currentCategory = 'all';
+
+    // --- 渲染商品卡片列表 ---
+    function renderProducts() {
+      const grid = document.getElementById("product-grid");
+      const filtered = currentCategory === 'all' 
+        ? products 
+        : products.filter(p => p.category === currentCategory);
+
+      grid.innerHTML = filtered.map(product => `
+        <div class="product-card" onclick="openDetailModal(${product.id})">
+          <div class="image-wrapper">
+            <img class="product-img" src="${product.image}" alt="${product.name}" loading="lazy" />
+          </div>
+          <div class="product-info">
+            <span class="product-category-tag">${getCategoryName(product.category)}</span>
+            <h3 class="product-title">${product.name}</h3>
+            <div class="product-price">NT$ ${product.price.toLocaleString()}</div>
+            <div class="card-buttons">
+              <button class="btn-secondary" onclick="event.stopPropagation(); openDetailModal(${product.id})">詳情</button>
+              <button class="btn-primary" onclick="event.stopPropagation(); quickAddToCart(${product.id})">加入購物車</button>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function getCategoryName(catKey) {
+      const map = { peripherals: '核心外設', audio: '音訊影音', gear: '裝備配件' };
+      return map[catKey] || '電競裝備';
+    }
+
+    // --- 分類篩選 ---
+    function filterCategory(category, element) {
+      currentCategory = category;
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      element.classList.add('active');
+      renderProducts();
+    }
+
+    // --- 打開商品詳情 Modal ---
+    function openDetailModal(productId) {
+      const product = products.find(p => p.id === productId);
+      if (!product) return;
+
+      const detailContent = document.getElementById("detail-content");
+      detailContent.innerHTML = `
+        <div class="detail-grid">
+          <img class="detail-img" src="${product.image}" alt="${product.name}" />
+          <div class="detail-info">
+            <span class="product-category-tag">${getCategoryName(product.category)}</span>
+            <h2>${product.name}</h2>
+            <div class="product-price">NT$ ${product.price.toLocaleString()}</div>
+            <p class="detail-desc">${product.desc}</p>
+            <div class="detail-specs">
+              <strong>規格尺寸：</strong> ${product.size}
+            </div>
+            <div class="option-group">
+              <label class="option-title">選擇顏色/款式 (${product.colors.length} 種選擇)：</label>
+              <select class="option-select" id="modal-color-select">
+                ${product.colors.map(color => `<option value="${color}">${color}</option>`).join("")}
+              </select>
+            </div>
+            <button class="btn-primary" style="width:100%; padding:0.8rem;" onclick="addDetailToCart(${product.id})">
+              加入購物車
+            </button>
+          </div>
+        </div>
+      `;
+      openModal("detail-modal");
+    }
+
+    // --- 購物車邏輯 ---
+    function quickAddToCart(productId) {
+      const product = products.find(p => p.id === productId);
+      if (product) {
+        cart.push({ ...product, selectedColor: product.colors[0] });
+        updateCartUI();
+      }
+    }
+
+    function addDetailToCart(productId) {
+      const product = products.find(p => p.id === productId);
+      const colorSelect = document.getElementById("modal-color-select");
+      if (product && colorSelect) {
+        cart.push({ ...product, selectedColor: colorSelect.value });
+        updateCartUI();
+        closeModal("detail-modal");
+      }
+    }
+
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      updateCartUI();
+      if (document.getElementById("checkout-view").classList.contains("active")) {
+        renderCheckoutView();
+      }
+    }
+
+    function updateCartUI() {
+      document.getElementById("cart-count").innerText = cart.length;
+      const cartItemsContainer = document.getElementById("cart-items");
+      const cartTotalContainer = document.getElementById("cart-total");
+
+      if (cart.length === 0) {
+        cartItemsContainer.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 1.5rem;">購物車內暫無裝備</p>`;
+        cartTotalContainer.innerText = `NT$ 0`;
+        return;
+      }
+
+      let total = 0;
+      cartItemsContainer.innerHTML = cart.map((item, index) => {
+        total += item.price;
+        return `
+          <div class="cart-item">
+            <div>
+              <div style="font-weight:600; color:#fff;">${item.name}</div>
+              <div class="cart-item-meta">顏色: ${item.selectedColor}</div>
+              <div style="color: var(--accent-red); font-weight:bold; font-size:0.9rem;">NT$ ${item.price.toLocaleString()}</div>
+            </div>
+            <button onclick="removeFromCart(${index})" style="background:none; border:none; color:#ff4757; cursor:pointer; font-size:0.85rem;">移除</button>
+          </div>
+        `;
+      }).join("");
+
+      cartTotalContainer.innerText = `NT$ ${total.toLocaleString()}`;
+    }
+
+    // --- 畫面切換 (商店 / 結帳) ---
+    function switchView(viewName) {
+      document.querySelectorAll(".view-section").forEach(el => el.classList.remove("active"));
+      if (viewName === 'checkout') {
+        renderCheckoutView();
+        document.getElementById("checkout-view").classList.add("active");
+      } else {
+        document.getElementById("shop-view").classList.add("active");
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function goToCheckout() {
+      if (cart.length === 0) {
+        alert("您的購物車是空的！請先挑選商品。");
+        return;
+      }
+      closeModal("cart-modal");
+      switchView('checkout');
+    }
+
+    function renderCheckoutView() {
+      const listContainer = document.getElementById("checkout-items-list");
+      let total = 0;
+
+      if (cart.length === 0) {
+        listContainer.innerHTML = `<p style="color:var(--text-muted);">無選購商品</p>`;
+      } else {
+        listContainer.innerHTML = cart.map(item => {
+          total += item.price;
+          return `
+            <div class="summary-row">
+              <span>${item.name} <small style="color:var(--text-muted);">(${item.selectedColor})</small></span>
+              <span>NT$ ${item.price.toLocaleString()}</span>
+            </div>
+          `;
+        }).join("");
+      }
+
+      document.getElementById("checkout-subtotal").innerText = `NT$ ${total.toLocaleString()}`;
+      document.getElementById("checkout-final-total").innerText = `NT$ ${total.toLocaleString()}`;
+    }
+
+    function handleCheckoutSubmit(event) {
+      event.preventDefault();
+      alert("🎉 感謝您的購買！此為測試結帳頁面，訂單已成功送出。");
+      cart = [];
+      updateCartUI();
+      switchView('shop');
+    }
+
+    // --- Modal 開關函式 ---
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.add("active");
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove("active");
+    }
+
+    function toggleCartModal() {
+      const modal = document.getElementById("cart-modal");
+      if (modal.classList.contains("active")) {
+        closeModal("cart-modal");
+      } else {
+        openModal("cart-modal");
+      }
+    }
+
+    // 啟動渲染
+    renderProducts();
+  </script>
+</body>
+</html>
